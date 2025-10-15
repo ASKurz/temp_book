@@ -1,0 +1,32 @@
+<!-- global.qmd  
+<!-- Defines variables, functions used repeatedly across many chapters of -->
+<!-- the book. Include this file at the beginning of every chapter file using -->
+<!-- [ blank line ] -->
+<!-- {{< include global.qmd >}} -->
+<!-- [ blank line ] -->
+<!-- See https://quarto.org/docs/authoring/includes.html -->
+
+```{r}
+#| echo: FALSE
+#| warning: FALSE
+#| message: FALSE
+
+# ARGH. Has no effect.
+# Set R code chunk font size:
+library("knitr")
+knitr::opts_chunk$set(size="tiny") # "tiny" "small" "normalsize" "footnotesize"
+
+# dbda3_utilities.R includes global colors and ggplot theme
+source("dbda3_r_scripts/dbda3_utilities.R")
+library("dbda3")
+
+# Global utility R functions that the reader does not need to see:
+format_num = function( x , digits=8 ){
+  return( format( x , digits=digits , big.mark="," , scientific=FALSE ) )
+}
+
+library(tinytable)  # To replace `library(kableExtra)`
+# Both tinytable and ggplot2 have a `theme_void()`, and we want the one from ggplot2
+theme_void <- ggplot2::theme_void
+```
+

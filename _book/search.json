@@ -1,0 +1,42 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "DBDA 3",
+    "section": "",
+    "text": "Error : package or namespace load failed for 'rjags':\n .onLoad failed in loadNamespace() for 'rjags', details:\n  call: dyn.load(file, DLLpath = DLLpath, ...)\n  error: unable to load shared object '/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/rjags/libs/rjags.so':\n  dlopen(/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/rjags/libs/rjags.so, 0x000A): Library not loaded: /usr/local/lib/libjags.4.dylib\n  Referenced from: &lt;CAF5E1DC-317A-34FE-988A-FB6F7C73D89E&gt; /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/rjags/libs/rjags.so\n  Reason: tried: '/usr/local/lib/libjags.4.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/usr/local/lib/libjags.4.dylib' (no such file), '/usr/local/lib/libjags.4.dylib' (no such file), '/Library/Frameworks/R.framework/Resources/lib/libjags.4.dylib' (no such file), '/Library/Java/JavaVirtualMachines/jdk-11.0.18+10/Contents/Home/lib/server/libjags.4.dylib' (no such file)\n\n\n\nFront matter\nThis is the front matter, in an index.qmd file required by Quarto because it assumes a website is being created.",
+    "crumbs": [
+      "Front matter"
+    ]
+  },
+  {
+    "objectID": "01_what_is_in_book.html",
+    "href": "01_what_is_in_book.html",
+    "title": "1  What’s in this book (Read this first!)",
+    "section": "",
+    "text": "1.1 Real people can read this book\ntable_df &lt;- data.frame(\n  property = c(\"Essential measure:\", \"Describe any distribution:\", \"Non-linear transformation invariant:\", \"Typical application:\", \"MCMC stability:\"),\n  mean_sd = c(\"Squared deviation\", \"Worst\", \"No\", \"Prior\", \"Best\"),\n  median_eti = c(\"Cumulative probability\", \"Middling\", \"Yes\", \"Posterior\", \"Middling\"),\n  mode_hdi = c(\"Probability density\", \"Best\", \"Only for discrete distributions\", \"Prior and posterior\", \"Worst\"))\n\npdf_table_df &lt;- data.frame(\n  property = c(\"Essential measure:\", \"Describe any distribution:\", \"{Non-linear transformation \\\\\\\\ invariant:}\", \"Typical application:\", \"MCMC stability:\"),\n  mean_sd = c(\"{Squared \\\\\\\\ deviation}\", \"Worst\", \"No\", \"Prior\", \"Best\"),\n  median_eti = c(\"{Cumulative \\\\\\\\ probability}\", \"Middling\", \"Yes\", \"Posterior\", \"Middling\"),\n  mode_hdi = c(\"{Probability \\\\\\\\ density}\", \"Best\", \"{Only for discrete \\\\\\\\ distributions}\", \"Prior and posterior\", \"Worst\"))\n\npdf_table_df |&gt; \n  tt(width = c(2, 1.1, 1.1, 1.1)) |&gt; \n  format_tt(i = \"colnames\", escape = TRUE) |&gt;  # To handle the underscores and ampersands\n  style_tt(j = 1, align = \"l\") |&gt; \n  style_tt(j = 2:4, align = \"c\") |&gt; \n  setNames(c(\"Property\", \"Mean & SD\", \"Median & ETI\", \"Mode & HDI\"))\n\n\n\n    \n\n    \n\n    \n    \n    \n      \n        \n        \n              \n                Property\n                Mean & SD\n                Median & ETI\n                Mode & HDI\n              \n        \n        \n        \n                \n                  Essential measure:\n                  {Squared \\\\ deviation}\n                  {Cumulative \\\\ probability}\n                  {Probability \\\\ density}\n                \n                \n                  Describe any distribution:\n                  Worst\n                  Middling\n                  Best\n                \n                \n                  {Non-linear transformation \\\\ invariant:}\n                  No\n                  Yes\n                  {Only for discrete \\\\ distributions}\n                \n                \n                  Typical application:\n                  Prior\n                  Posterior\n                  Prior and posterior\n                \n                \n                  MCMC stability:\n                  Best\n                  Middling\n                  Worst",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>What's in this book (Read this first!)</span>"
+    ]
+  },
+  {
+    "objectID": "01_what_is_in_book.html#real-people-can-read-this-book",
+    "href": "01_what_is_in_book.html#real-people-can-read-this-book",
+    "title": "1  What’s in this book (Read this first!)",
+    "section": "",
+    "text": "Knuth, D. E. (1984). Literate programming. Comput. J., 27(2), 97–111. https://doi.org/10.1093/comjnl/27.2.97",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>What's in this book (Read this first!)</span>"
+    ]
+  },
+  {
+    "objectID": "references.html",
+    "href": "references.html",
+    "title": "References",
+    "section": "",
+    "text": "Knuth, D. E. (1984). Literate programming. Comput. J.,\n27(2), 97–111. https://doi.org/10.1093/comjnl/27.2.97",
+    "crumbs": [
+      "References"
+    ]
+  }
+]

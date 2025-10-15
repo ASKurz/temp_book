@@ -1,0 +1,5 @@
+{{< include global.qmd >}}
+
+# Front matter {.unnumbered}
+
+This is the front matter, in an `index.qmd` file *required* by Quarto because it assumes a website is being created.

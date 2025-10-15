@@ -1,0 +1,38 @@
+
+{{< include global.qmd >}}
+
+# What's in this book (Read this first!) {#sec-overview}
+
+<!-- ::: {.callout-note appearance="minimal"} -->
+<!-- Oh honey I'm searching for love that is true,\ -->
+<!-- But driving through fog is so dang hard to do.\ -->
+<!-- Please paint me a line on the road to your heart,\ -->
+<!-- I'll rev up my pick up and get a clean start.^[This chapter provides a road map to the book, which hopes to have you fall in love with Bayesian analysis even if you previously had unhappy relationships with statistics. The poem plays with those ideas.] -->
+<!-- ::: -->
+
+This is a reference: @knuth84.
+
+## Real people can read this book
+
+```{r}
+table_df <- data.frame(
+  property = c("Essential measure:", "Describe any distribution:", "Non-linear transformation invariant:", "Typical application:", "MCMC stability:"),
+  mean_sd = c("Squared deviation", "Worst", "No", "Prior", "Best"),
+  median_eti = c("Cumulative probability", "Middling", "Yes", "Posterior", "Middling"),
+  mode_hdi = c("Probability density", "Best", "Only for discrete distributions", "Prior and posterior", "Worst"))
+
+pdf_table_df <- data.frame(
+  property = c("Essential measure:", "Describe any distribution:", "{Non-linear transformation \\\\ invariant:}", "Typical application:", "MCMC stability:"),
+  mean_sd = c("{Squared \\\\ deviation}", "Worst", "No", "Prior", "Best"),
+  median_eti = c("{Cumulative \\\\ probability}", "Middling", "Yes", "Posterior", "Middling"),
+  mode_hdi = c("{Probability \\\\ density}", "Best", "{Only for discrete \\\\ distributions}", "Prior and posterior", "Worst"))
+
+pdf_table_df |> 
+  tt(width = c(2, 1.1, 1.1, 1.1)) |> 
+  format_tt(i = "colnames", escape = TRUE) |>  # To handle the underscores and ampersands
+  style_tt(j = 1, align = "l") |> 
+  style_tt(j = 2:4, align = "c") |> 
+  setNames(c("Property", "Mean & SD", "Median & ETI", "Mode & HDI"))
+```
+
+

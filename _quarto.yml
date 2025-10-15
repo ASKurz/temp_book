@@ -1,0 +1,65 @@
+project:
+  type: book
+
+book:
+  title: "DBDA 3"
+  author: "John and Solomon"
+  date: now
+  date-format: "dddd, MMMM D, YYYY; hh:mm A"
+  chapters:
+    - index.qmd
+    - 01_what_is_in_book.qmd
+    - references.qmd
+
+bibliography: references.bib
+csl: apa.csl
+link-citations: true
+
+format:
+  pdf:
+    pdf-engine: pdflatex # pdflatex # xelatex # lualatex
+    keep-tex: true
+    # fontfamily: erewhon # times # utopia
+    fontsize: 12pt # 12pt
+    documentclass: book # scrbook
+    # colorlinks: true
+    linkcolor: blue
+    papersize: letter
+    geometry:
+      - top=1.75in # 7.50 text height
+      - bottom=1.75in
+      - left=1.125in # 6.25 text width
+      - right=1.125in
+    toc: true
+    toc-depth: 4
+    number-sections: true
+    number-depth: 4
+    include-in-header:
+      text: |
+        \usepackage{amsmath,amssymb,mathtools,bm} % ams math
+        \usepackage{bm} % bold math 
+        \usepackage{wasysym}
+        \usepackage[scale=0.75]{sourcecodepro} % reduced size of monofont
+        % \usepackage{fontspec} % for setmonofont below % can't get to work
+        % \setmonofont{Courier}[Scale=0.75] % can't get to work
+        \setlength{\parskip}{2.0pt plus 5.0pt minus 2.0pt}
+        \setlength{\parindent}{3.0ex}
+        \setlength{\textfloatsep}{10pt plus 1.0pt minus 2.0pt}
+        \setlength{\floatsep}{10pt plus 1.0pt minus 2.0pt}
+    include-before-body:
+      text: |
+        \captionsetup[subfigure]{width=0.80\textwidth,font=small}
+        \captionsetup{width=0.90\textwidth,font=small}
+        \captionsetup{skip=5pt}
+        \captionsetup{belowskip=0pt}
+        \newcommand{\fixefsymbol}{\gamma}
+        \newcommand{\ranefsymbol}{\delta}
+
+  html:
+    theme: default
+    keep-md: true
+    toc: true
+    toc-depth: 4
+    number-sections: true
+    number-depth: 4
+
