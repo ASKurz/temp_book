@@ -12,22 +12,17 @@
 
 This is a reference: @knuth84.
 
-## Real people can read this book
+## Chapter 4 tables
 
 ```{r}
-table_df <- data.frame(
-  property = c("Essential measure:", "Describe any distribution:", "Non-linear transformation invariant:", "Typical application:", "MCMC stability:"),
-  mean_sd = c("Squared deviation", "Worst", "No", "Prior", "Best"),
-  median_eti = c("Cumulative probability", "Middling", "Yes", "Posterior", "Middling"),
-  mode_hdi = c("Probability density", "Best", "Only for discrete distributions", "Prior and posterior", "Worst"))
+#| label: tbl-cen-tend-spread
+#| tbl-cap: "Properties of descriptors of central tendency and spread."
 
-pdf_table_df <- data.frame(
+data.frame(
   property = c("Essential measure:", "Describe any distribution:", "{Non-linear transformation \\\\ invariant:}", "Typical application:", "MCMC stability:"),
   mean_sd = c("{Squared \\\\ deviation}", "Worst", "No", "Prior", "Best"),
   median_eti = c("{Cumulative \\\\ probability}", "Middling", "Yes", "Posterior", "Middling"),
-  mode_hdi = c("{Probability \\\\ density}", "Best", "{Only for discrete \\\\ distributions}", "Prior and posterior", "Worst"))
-
-pdf_table_df |> 
+  mode_hdi = c("{Probability \\\\ density}", "Best", "{Only for discrete \\\\ distributions}", "Prior and posterior", "Worst")) |> 
   tt(width = c(2, 1.1, 1.1, 1.1)) |> 
   format_tt(i = "colnames", escape = TRUE) |>  # To handle the underscores and ampersands
   style_tt(j = 1, align = "l") |> 
@@ -35,4 +30,481 @@ pdf_table_df |>
   setNames(c("Property", "Mean & SD", "Median & ETI", "Mode & HDI"))
 ```
 
+```{r}
+#| label: tbl-EyeHairColor
+#| tbl-cap: "Proportions of *combinations* of eye color and hair color. (Some rows or columns may not sum exactly to their displayed marginals because of rounding for display.)"
 
+data("hair_eye_color")
+
+hair_eye_df <- hair_eye_color |>
+  uncount(weights = count, .remove = FALSE) |> 
+  tabyl(eye, hair) |> 
+  adorn_totals(c("row", "col"), name = "Marginal (sum)") |>
+  data.frame(check.names = FALSE) |> 
+  mutate_if(is.double, .funs = ~ .x / max(`Marginal (sum)`))
+
+hair_eye_df |> 
+  rename(`Eye color` = eye) |> 
+  tt() |> 
+  format_tt(j = 2:6, digits = 2, num_fmt = "decimal", num_zero = TRUE) |> 
+  style_tt(j = 1, align = "l") |>
+  style_tt(j = 2:6, align = "r") |>
+  group_tt(j = list("Hair color" = 2:5))
+```
+
+```{r}
+#| label: tbl-HairColorGivenBlueEyes
+#| tbl-cap: "Example of conditional probability: the probabilities of hair colors given that eyes are blue."
+
+hair_eye_df |> 
+  rename(`Eye color` = eye) |> 
+  filter(`Eye color` == "Blue") |> 
+  pivot_longer(cols = -`Eye color`) |> 
+  mutate(numerator = formatC(value, digits = 2, format = "f"),
+         denominator = max(value) |> formatC(digits = 2, format = "f"),
+         quotient = (value / max(value)) |> formatC(digits = 2, format = "f")) |> 
+  mutate(equation = str_c("$\\frac{", numerator, "}{", denominator, "}=", quotient, "$")) |> 
+  select(`Eye color`, name, equation) |> 
+  pivot_wider(names_from = name, values_from = equation) |>
+  
+  tt() |>
+  group_tt(j = list("Hair color" = 2:5)) |> 
+  style_tt(j = 2:6, align = "r")
+```
+
+## Chapter 5 tables
+
+```{r}
+#| label: tbl-forbayesrule
+#| tbl-cap: "A table for making Bayes' rule not merely special but spatial. A cell of the table contains the joint probability of row $r$ and column $c$, denoted $p(r,c)$, and re-expressed as $p(r|c)p(c)$. The marginals contain $p(r)$ or $p(c)$, with $p(r)$ re-expressed as the sum across columns. When conditionalizing on the row value $r$, Bayes' rule gets us from the lower marginal distribution, $p(c)$, to the conditional distribution $p(c|r)$. The math for conditionalizing on row $r$ is shown in Table \\ref{tbl-forbayesruleRow}."
+
+data.frame(
+  Row        = c("$\\vdots$", "$r$", "$\\vdots$", "Marginal"),
+  `$\\dots$` = c("", "$\\dots$", "", "$\\dots$"),
+  `$c$`      = c("$\\vdots$", "$p(r, c) = p(r|c) p(c)$", "$\\vdots$", "$p(c)$"),
+  `$\\dots$` = c("", "$\\dots$", "", "$\\dots$"),
+  Marginal   = c("$\\vdots$", "$p(r) = \\sum_{c^*} p(r|c^*) p(c^*)$", "$\\vdots$", ""),
+  check.names = FALSE) |> 
+  tt() |>
+  group_tt(j = list("Column" = 2:4)) |> 
+  style_tt(j = 1, align = "l") |> 
+  style_tt(j = 2:5, align = "c")
+```
+
+```{r}
+#| label: tbl-forbayesruleRow
+#| tbl-cap: "Conditionalizing on row $r$ in Table \\ref{tbl-forbayesrule}. The resulting conditional probabilities in each cell are the posterior probabilities in Bayes' rule, $p(c|r)$."
+
+data.frame(
+  Row        = "$r$",
+  `$\\dots$` = "$\\dots$",
+  `$c$`      = "$p(c|r) = \\frac{p(r, c)}{p(r)} = \\frac{p(r|c) p(c)}{\\sum_{c^*} p(r|c^*) p(c^*)}$",
+  `$\\dots$` = "$\\dots$",
+  Marginal   = "$\\frac{p(r)}{p(r)} = 1$",
+  check.names = FALSE) |> 
+  tt() |>
+  group_tt(j = list("Column" = 2:4)) |> 
+  style_tt(j = 1, align = "l") |> 
+  style_tt(j = 2:5, align = "c")
+```
+
+```{r}
+#| label: tbl-DiseaseDiagnosis
+#| tbl-cap: "Joint and marginal probabilities of test results and disease states. Notice the joint probabilities are naturally expressed as $p(T|\\theta) p(\\theta)$."
+
+data.frame(
+  `Test result`                         = c("$T=+$", "$T=-$", "Marginal"),
+  `$\\theta = \\ddot\\frown$ (present)` = c(
+    "$p(+|\\ddot\\frown)p(\\ddot\\frown)$", "$p(-|\\ddot\\frown)p(\\ddot\\frown)$", "$p(\\ddot\\frown)$"),
+  `$\\theta = \\ddot\\smile$ (absent)`  = c(
+    "$p(+|\\ddot\\smile)p(\\ddot\\smile)$", "$p(-|\\ddot\\smile)p(\\ddot\\smile)$", "$p(\\ddot\\smile)$"),
+  Marginal                              = c(
+    "$\\sum_\\theta p(+|\\theta)p(\\theta)$", "$\\sum_\\theta p(-|\\theta)p(\\theta)$", "1.0"),
+  check.names = FALSE) |> 
+  tt() |>
+  group_tt(j = list("Disease condition" = 2:3)) |> 
+  style_tt(j = 1, align = "l") |> 
+  style_tt(j = 2:4, align = "c")
+```
+
+```{r}
+#| label: tbl-dataparam
+#| tbl-cap: "Applying Bayes' rule to data (in rows) and parameter values (in columns). A cell of the table contains the joint probability, $p(D|\\theta) p(\\theta)$. The prior probabilities of the parameters are on the lower marginal, and the posterior probabilities are computed by conditionalizing on a row of the table."
+
+data.frame(
+  Data              = c("$\\vdots$", "$D$ value", "$\\vdots$", "Marginal"),
+  `$\\dots$`        = c("", "$\\dots$", "", "$\\dots$"),
+  `$\\theta$ value` = c("$\\vdots$", "$p(D, \\theta) = p(D|\\theta) p(\\theta)$", "$\\vdots$", "$p(\\theta)$"),
+  `$\\dots$`        = c("", "$\\dots$", "", "$\\dots$"),
+  Marginal          = c("$\\vdots$", "$p(D) = \\sum_{\\theta^*} p(D|\\theta^*) p(\\theta^*)$", "$\\vdots$", ""),
+  check.names = FALSE) |> 
+  tt() |>
+  group_tt(j = list("Model Parameter" = 2:4)) |> 
+  style_tt(j = 1, align = "l") |> 
+  style_tt(j = 2:5, align = "c")
+```
+
+## Chapter 7 tables
+
+```{r}
+#| label: tbl-metro_chain_diag
+#| tbl-cap: 'Summary and diagnostics of chains in Figure \\ref{fig-trace_density}. "rhat" is a convergence diagnostic, with desired value of 1.01 or less. "q50" is the 50%ile (i.e., median) of the chain that represents parameter theta. "ess_q50" is the ESS, with larger being better. "mcse_q50" is the estimated MCSE across different MCMC chains.'
+
+# Chain length
+n_steps <- 1000
+
+# Population values
+z <- 14
+n <- 20
+a <- 1
+b <- 1
+
+metro_df <- data.frame(chain = 1:4,
+                       init_pos = c(0.01, 0.33, 0.67, 0.99)) |> 
+  expand_grid(pro_sd = c(0.02, 0.2, 2)) |> 
+  # Not necessary, just nice for formatting
+  arrange(pro_sd, init_pos, chain) |> 
+  mutate(seed = 1:n()) |> 
+  # Not necessary, just nice for formatting
+  select(pro_sd, init_pos, seed, chain) |> 
+  mutate(mh = pmap(.l = list(pro_sd, init_pos, seed), 
+                   .f = metro_walk,
+                   # Manually fix these arguments within `metro_walk()`
+                   n_steps = n_steps, z = z, n = n, a = a, b = b)) |> 
+  unnest(mh)
+
+
+rbeta_df <- tibble(seed = 13:16,
+                   chain = 1:4) |> 
+  mutate(theta = map(.x = seed, 
+                     .f = function(.x) {
+                       set.seed(.x)
+                       rbeta(n = n_steps, shape1 = z + a, shape2 = n - z + b)
+                     })) |> 
+  unnest(theta) |> 
+  mutate(step = rep(1:n_steps, times = 4))
+
+metro_rbeta_df <- bind_rows(
+  # 3 levels of `metro_walk()`
+  metro_df |> 
+    mutate(generator = str_c("italic(SD)==", pro_sd)) |> 
+    select(generator, chain, step, theta),
+  # `rbeta()`
+  rbeta_df |> 
+    mutate(generator = "rbeta()") |> 
+    select(generator, chain, step, theta)
+) |> 
+  # Adjust the format a bit
+  mutate(chain = factor(chain),
+         generator = factor(generator, 
+                            levels = c(str_c("italic(SD)==", c(0.02, 0.2, 2)), "rbeta()"))) 
+
+mh_diag_df <- metro_rbeta_df |> 
+  # Drop this unnecessary vector
+  select(-step) |> 
+  # This step is important for `summarize_draws_dbda3()`
+  rename(.chain = chain) |> 
+  nest(data = -generator) |> 
+  mutate(summarize_draws = map(.x = data, .f = summarize_draws_dbda3)) |> 
+  unnest(summarize_draws) |> 
+  # Not necessary, but streamlines the output
+  select(-data, -variable)
+
+mh_diag_df |> 
+  mutate(Generator = c(str_c("$\\textit{SD}=", c(0.02, 0.2, 2), "$"), "rbeta()")) |>
+  select(Generator, rhat, ends_with("q50")) |> 
+  tt() |> 
+  format_tt(i = "colnames", escape = TRUE) |> 
+  format_tt(j = c(2, 4, 5), digits = 3, num_fmt = "decimal", num_zero = TRUE) |> 
+  format_tt(j = 3, digits = 1, num_fmt = "decimal", num_zero = TRUE) |> 
+  style_tt(j = 1, align = "l") |> 
+  style_tt(j = 2:5, align = "r") |> 
+  style_tt(j = 5, bold = TRUE)
+```
+
+```{r}
+#| label: tbl-metro_chain_diag_eti
+#| tbl-cap: 'Continuation of Table \\ref{tbl-metro_chain_diag}, with summary and diagnostics of chains in Figure \\ref{fig-trace_density}. "q2.5" and "q97.5" are the limits of the 95% ETI of the chain that represents parameter theta.'
+
+mh_diag_df |> 
+  mutate(Generator = c(str_c("$\\textit{SD}=", c(0.02, 0.2, 2), "$"), "rbeta()")) |> 
+  select(Generator, ends_with("2.5"), ends_with("97.5")) |> 
+  tt() |> 
+  format_tt(i = "colnames", escape = TRUE) |> 
+  format_tt(j = c(3:4, 6:7), digits = 3, num_fmt = "decimal", num_zero = TRUE) |>
+  format_tt(j = c(2, 5), digits = 1, num_fmt = "decimal", num_zero = TRUE) |>
+  style_tt(j = 1, align = "l") |> 
+  style_tt(j = 2:7, align = "r") |> 
+  style_tt(j = c(4, 7), bold = TRUE)
+```
+
+## Chapter 8 tables
+
+```{r}
+#| label: tbl-diag_tbl_median
+#| tbl-cap: "Diagnostics for chains produced by Stan (plotted in Figure \\ref{fig-stan_tr_den}), here focusing on the median, q50. Continued in Table \\ref{tbl-diag_tbl_eti}."
+
+n <- 50  # Number of flips
+z <- 10  # Number of heads
+y <- rep(0:1, times = c(n - z, z))  # Vector of 1's and 0's
+data_list <- list(y = y, n = n)     # `z` not needed
+
+model_spec <- "
+  data {
+    int<lower=0> n;  // Integer non-negative constant
+    array[n] int y;  // Length-`n` array of integers
+  }
+  parameters {
+    real<lower=0, upper=1> theta;  // Real value in [0, 1]
+  }
+  model {
+    theta ~ beta(1, 1);    // Prior
+    y ~ bernoulli(theta);  // Likelihood
+  }
+"  # Close quote of `model_spec`
+
+stan_dso <- stan_model(model_code = model_spec)
+
+stan_fit <- sampling(object = stan_dso, data = data_list, 
+                     chains = 4, warmup = 200, iter = 3200, seed = 47)
+
+# Compute and save
+stan_fit_diag <- summarize_draws_dbda3(stan_fit) |>
+  filter(variable != "lp__")
+
+# Wrangle and entable
+stan_fit_diag |> 
+  rename(Variable = variable) |> 
+  select(Variable, rhat, ends_with("q50")) |> 
+  tt() |> 
+  format_tt(i = "colnames", escape = TRUE) |> 
+  format_tt(j = c(2, 4, 5), digits = 3, num_fmt = "decimal", num_zero = TRUE) |> 
+  format_tt(j = 3, digits = 1, num_fmt = "decimal", num_zero = TRUE) |> 
+  style_tt(j = 1, align = "l") |> 
+  style_tt(j = 2:5, align = "r") |> 
+  style_tt(j = 5, bold = TRUE)
+```
+
+```{r}
+#| label: tbl-diag_tbl_eti
+#| tbl-cap: "Diagnostics for chains produced by Stan (plotted in Figure \\ref{fig-stan_tr_den}), here focusing on the 95% ETI limits, q2.5 and q97.5. This is continued from Table \\ref{tbl-diag_tbl_median}."
+
+stan_fit_diag |> 
+  rename(Variable = variable) |> 
+  select(Variable, ends_with("2.5"), ends_with("97.5")) |> 
+  tt() |> 
+  format_tt(i = "colnames", escape = TRUE) |> 
+  format_tt(j = c(3:4, 6:7), digits = 3, num_fmt = "decimal", num_zero = TRUE) |> 
+  format_tt(j = c(2, 5), digits = 1, num_fmt = "decimal", num_zero = TRUE) |> 
+  style_tt(j = 1, align = "l") |> 
+  style_tt(j = 2:7, align = "r") |> 
+  style_tt(j = c(4, 7), bold = TRUE)
+```
+
+## Chapter 9 tables
+
+```{r}
+#| label: tbl-diag_tbl_median_09
+#| tbl-cap: "Diagnostics for chains produced by Stan, here focused on the median, denoted q50. ($\\theta_2$ to $\\theta_{27}$ are omitted to save space.) Continued in Table \\ref{tbl-diag_tbl_eti_09}."
+
+data("therapeutic_touch")
+
+y <- therapeutic_touch |>  # `correct == 1`, `wrong == 0`
+  transmute(y = ifelse(response == "correct", 1, 0)) |> 
+  pull()
+j <- therapeutic_touch |>  # Consecutive integers
+  transmute(participant = factor(participant) |> as.numeric()) |> 
+  pull()
+n_j <- unique(j) |> length()  # Number of participants
+n_t <- length(y) 
+
+beta_mode <- 0.5
+beta_kappa <- 2.001  # Essentially uniform
+beta_ab <- beta_a_b_from_mode_kappa(mode = beta_mode, kappa = beta_kappa)
+beta_a <- beta_ab$a
+beta_b <- beta_ab$b
+
+gamma_mode <- 1 
+gamma_sd <- 20
+gamma_sr <- gamma_s_r_from_mode_sd(mode = gamma_mode, sd = gamma_sd)
+gamma_s <- gamma_sr$shape
+gamma_r <- gamma_sr$rate
+
+data_list <- list(y = y, j = j, n_j = n_j, n_t = n_t,
+                  beta_a = beta_a, beta_b = beta_b, 
+                  gamma_s = gamma_s, gamma_r = gamma_r)
+
+model_spec <- "
+  data {
+    int<lower=1> n_j;
+    int<lower=1> n_t;
+    array[n_t] int<lower=0, upper=1> y;
+    array[n_t] int<lower=1> j;           // Notice `n_t`, not `n_j`
+    // Prior constants:
+    real<lower=0> beta_a;
+    real<lower=0> beta_b;
+    real<lower=0> gamma_s;
+    real<lower=0> gamma_r;
+  }
+  parameters {
+    real<lower=0, upper=1> theta[n_j];  // Individual probability correct, by `j`
+    real<lower=0, upper=1> omega;       // Group mode
+    real<lower=0> kappa_minus_two;      // Group concentration minus two
+  }
+  transformed parameters {
+    real<lower=0> kappa;
+    kappa = kappa_minus_two + 2;
+  }
+  model {
+    omega ~ beta(beta_a, beta_b);
+    kappa_minus_two ~ gamma(gamma_s, gamma_r); 
+    theta ~ beta(omega * (kappa_minus_two) + 1, (1 - omega) * (kappa_minus_two) + 1); 
+    y ~ bernoulli(theta[j]);
+  }
+"
+
+stan_dso <- stan_model(model_code = model_spec)
+
+stan_fit <- sampling(object = stan_dso, data = data_list, 
+                     chains = 4, warmup = 200, iter = 5200, seed = 47)
+
+stan_fit_draws <- as_draws_df(stan_fit) |>
+  mutate(`theta[28]-theta[1]` = `theta[28]` - `theta[1]`)
+
+stan_fit_diag <- summarize_draws_dbda3(stan_fit_draws) |>
+  filter(variable != "lp__" & variable != "kappa_minus_two")
+
+variable_vec <- c("theta[1]", "theta[28]", "omega", "kappa", "theta[28]-theta[1]")
+latex_vec <- c("$\\theta_{1}$", "$\\theta_{28}$", "$\\omega$", "$\\kappa$", "$\\theta_{28}-\\theta_{1}$")
+
+stan_fit_diag |> 
+  filter(variable %in% variable_vec) |> 
+  mutate(Variable = latex_vec) |> 
+  select(Variable, rhat, ends_with("q50")) |> 
+  tt() |> 
+  format_tt(i = "colnames", escape = TRUE) |> 
+  format_tt(j = c(2, 4, 5), digits = 3, num_fmt = "decimal", num_zero = TRUE) |> 
+  format_tt(j = 3, digits = 1, num_fmt = "decimal", num_zero = TRUE) |> 
+  style_tt(j = 1, align = "l") |> 
+  style_tt(j = 2:5, align = "r") |> 
+  style_tt(j = 5, bold = TRUE)
+```
+
+```{r}
+#| label: tbl-diag_tbl_eti_09
+#| tbl-cap: "Diagnostics for chains produced by Stan, here focused on the 95% ETI, with limits denoted q2.5 and q97.5. ($\\theta_2$ to $\\theta_{27}$ are omitted to save space.) Continued from Table \\ref{tbl-diag_tbl_median_09}."
+
+stan_fit_diag |> 
+  filter(variable %in% variable_vec) |> 
+  mutate(Variable = latex_vec) |> 
+  select(Variable, ends_with("2.5"), ends_with("97.5")) |> 
+  tt() |> 
+  format_tt(i = "colnames", escape = TRUE) |> 
+  format_tt(j = c(3:4, 6:7), digits = 3, num_fmt = "decimal", num_zero = TRUE) |> 
+  format_tt(j = c(2, 5), digits = 1, num_fmt = "decimal", num_zero = TRUE) |> 
+  style_tt(j = 1, align = "l") |> 
+  style_tt(j = 2:7, align = "r") |> 
+  style_tt(j = c(4, 7), bold = TRUE)
+```
+
+## Chapter 10 tables
+
+```{r}
+#| label: tbl-dataparam_mm
+#| tbl-cap: "Applying Bayes' rule to parameters from multiple models, with $\\theta_1$ from model $m=1$ and $\\theta_2$ from model $m=2$. The lower marginal is the prior probability of the parameters normalized across all models; that is, $p(\\theta_m) = p(\\theta_m|m) p(m)$ as in Equation \\ref{eq:p_theta_m}."
+
+# Necessary to render the LaTeX to HTML, but not needed to render to PDF
+options(tinytable_html_mathjax = TRUE)
+
+data.frame(
+  Data                = c("$\\vdots$", "$D$", "$\\vdots$", "Marginal"),
+  `$\\theta_1$ value` = c("$\\vdots$", "$p(D|\\theta_1) p(\\theta_1)$", "$\\vdots$", "$p(\\theta_1)$"),
+  `$\\dots$`          = c("", "$\\dots$", "", "$\\dots$"),
+  `$\\theta_2$ value` = c("$\\vdots$", "$p(D|\\theta_2) p(\\theta_2)$", "$\\vdots$", "$p(\\theta_2)$"),
+  Marginal            = c("$\\vdots$", "$p(D)$", "$\\vdots$", "1.0"),
+  check.names = FALSE) |> 
+  tt() |>
+  group_tt(j = list("Model parameter" = 2:4)) |>
+  style_tt(j = 1, align = "l") |> 
+  style_tt(j = 2:5, align = "c")
+```
+
+```{r}
+#| label: tbl-diag_tbl_both_bias
+#| tbl-cap: "Diagnostics of chains produced by Stan for the tail-biased and head-biased models."
+
+z <- 6  # Number of heads
+n <- 9  # Number of flips
+y <- rep(0:1, times = c(n - z, z))  # Vector of 0's and 1's
+data_list <- list(y = y, n = n)     # `z` not needed
+
+model_spec_tail_bias <- "
+  data {
+    int<lower=0> n;
+    array[n] int y;
+  }
+  parameters {
+    real<lower=0, upper=1> theta;
+  }
+  model {
+    target += beta_lpdf(theta | 3.5, 8.5);  // Prior
+    target += bernoulli_lpmf(y | theta);    // Likelihood 
+  }
+"
+
+model_spec_head_bias <- "
+  data {
+    int<lower=0> n;
+    array[n] int y;
+  }
+  parameters {
+    real<lower=0, upper=1> theta;
+  }
+  model {
+    target += beta_lpdf(theta | 8.5, 3.5);  // Only the prior has changed
+    target += bernoulli_lpmf(y | theta);
+  }
+"
+
+stan_dso_tail_bias <- stan_model(model_code = model_spec_tail_bias)
+stan_dso_head_bias <- stan_model(model_code = model_spec_head_bias)
+
+stan_fit_tail_bias <- sampling( 
+  object = stan_dso_tail_bias, 
+  data = data_list,
+  chains = 4, warmup = 200, iter = 3200, seed = 47)
+
+stan_fit_head_bias <- sampling( 
+  object = stan_dso_head_bias, 
+  data = data_list,
+  chains = 4, warmup = 200, iter = 3200, seed = 47)
+
+stan_fit_tail_bias_diag <- summarize_draws( 
+  stan_fit_tail_bias,
+  rhat,
+  ~ess_quantile(.x, probs = c(0.50, 0.025, 0.975)))
+
+stan_fit_head_bias_diag <- summarize_draws( 
+  stan_fit_head_bias,
+  rhat,
+  ~ess_quantile(.x, probs = c(0.50, 0.025, 0.975)))
+
+bind_rows(stan_fit_tail_bias_diag, stan_fit_head_bias_diag) |> 
+  filter(variable != "lp__") |> 
+  mutate(Variable = str_c("$\\theta_{\\text{", c("Tail", "Head"), " Bias}}$")) |> 
+  select(Variable, rhat:ess_q97.5)  |> 
+  tt() |> 
+  format_tt(i = "colnames", escape = TRUE) |> 
+  format_tt(j = 2, digits = 3, num_fmt = "decimal", num_zero = TRUE) |> 
+  format_tt(j = 3:5, digits = 1, num_fmt = "decimal", num_zero = TRUE) |> 
+  style_tt(j = 1, align = "l") |> 
+  style_tt(j = 2:5, align = "r")
+```
+
+## Chapter 11 tables
+
+## Session information
+
+```{r}
+sessionInfo()
+```
